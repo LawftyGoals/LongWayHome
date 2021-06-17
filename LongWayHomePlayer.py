@@ -3,7 +3,7 @@ class player():
     name = ""
     health = 100
     strength = 15
-    agiity = 15
+    agility = 15
     spec_abilities = []
 
     currentLocation = [0, 0]
@@ -21,4 +21,3 @@ class player():
         return possible_spec_abilities[ability][0]
 
     
-

@@ -36,25 +36,42 @@ def battleField():
 
     while(battleOn):
         meleeEn = 0
+        meleeEnGr = []
         rangeEn = 0
+        rangeEnGr = []
 
         for i in enemyGroup:
             if (i.etype == "melee"):
                 meleeEn += 1
+                meleeEnGr.append(i)
             elif(i.etype == "range"):
                 rangeEn += 1
+                rangeEnGr.append(i)
 
-        if rangeEn > 0 :
-            print("%3s%-3s"*rangeEn %("","R"))
-        print("")
-        if meleeEn > 0 :
-            print("%3s%-3s"*meleeEn %("","M"))
-
-        print("\n"*3)
 
         while (True) :
+
+
+            if rangeEn > 0 :
+                for i in rangeEnGr :
+                    print("%3s%-3s"*rangeEn + rangeEnGr.index(i) %("","R")),
+            print("")
+            if meleeEn > 0 :
+                for i in meleeEnGr
+                    print("%3s%-3s"*meleeEn + meleeEnGr.index(i) %("","M")),
+
+            print("\n"*3)
+            
             battleChoice = int(input("1. Attack - 2. Defend - 3. Run\n"))
             if battleChoice == 1 :
+                whatEnemyAttack = input("Which enemy do you want to attack?\n")
+                if meleeEn > 0:
+                    print("You must target a melee unit.\n")
+                    
+                else:
+                    print("Only ranged units!")
+                playerDamage = currentPlayer.strength+(random.randint(-3,5))
+                
                 print("You attack!")
                 break
             elif battleChoice == 2 :
@@ -66,6 +83,11 @@ def battleField():
                 break
             else:
                 print("Wrong input.")
+
+            for ii in enemyGroup :
+                enemyDamage = ii.strength+(random.randint(-3,3))
+                currentPlayer.health -= enemyDamage
+                print("The", ii.etype, "enemy hurts you for", enemyDamage)
             
 
     for i in enemyGroup:
@@ -74,6 +96,8 @@ def battleField():
 
 
 def moveAround():
+
+    Skjønner,
 
 
     print(currentPlayer.currentLocation)
