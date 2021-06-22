@@ -9,9 +9,12 @@ currentPlayer = player()
 gameBoardSize =  7
 gameMap = gameBoardCreation(gameBoardSize)
 
-battleIntro = ["come crashing out of the forrest, heading straight for you!",
+battleIntro = ["vile beasts come crashing out of the forrest, heading straight for you!",
                "enemies appear from the shadows brandishing weapons!",
                "creatures come rushing for you, rabbid with bloodlust!"]
+battleIntroS = ["vile beast comes crashing out of the forrest, heading straight for you!",
+               "enemy appears from the shadows brandishing its weapons!",
+               "creature comes rushing for you, rabbid with bloodlust!"]
 
 gameOn = True
 
@@ -26,15 +29,24 @@ def battleField():
     battleOn = True
 
     enemyGroup = []
+
+
     
 #Adds number of enemies found in current player location to the enemy list.
     for i in range(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]):
         newEnemy = enemy(random.randint(0,2), random.randint(0,1))
         enemyGroup.append(newEnemy)
-        
-    print(len(enemyGroup), battleIntro[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
+
+    if len(enemyGroup) > 1:
+        print(len(enemyGroup), battleIntro[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
+    elif len(enemyGroup) == 0:
+        print(len(enemyGroup), battleIntroS[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
 
     while(battleOn):
+
+        if len(enemyGroup) == 0:
+            break
+        
         meleeEn = 0
         meleeEnGr = []
         rangeEn = 0
@@ -44,40 +56,41 @@ def battleField():
             if (i.etype == "melee"):
                 meleeEn += 1
                 meleeEnGr.append(i)
-            elif(i.etype == "range"):
+            elif(i.etype == "ranged"):
                 rangeEn += 1
                 rangeEnGr.append(i)
-
-
+        print(meleeEnGr)
+        print(rangeEnGr)
+        
         while (True) :
 
-
+            enDict = {"space":"", "R" : "R", "M": "M"}
+            
+            print("\n"*3)
+            
             if rangeEn > 0 :
                 for i in rangeEnGr :
-                    print("%3s%-3s"*rangeEn + rangeEnGr.index(i) %("","R")),
+                    print("%(space)3s %(R)-3s" % enDict),
             print("")
             if meleeEn > 0 :
-                for i in meleeEnGr
-                    print("%3s%-3s"*meleeEn + meleeEnGr.index(i) %("","M")),
+                for i in meleeEnGr:
+                    print('%(space)2s %(M)-3s' % enDict),
 
             print("\n"*3)
             
-            battleChoice = int(input("1. Attack - 2. Defend - 3. Run\n"))
-            if battleChoice == 1 :
+            battleChoice = input("1. Attack - 2. Defend - 3. Run\n")
+            if battleChoice == "1" :
                 whatEnemyAttack = input("Which enemy do you want to attack?\n")
                 if meleeEn > 0:
-                    print("You must target a melee unit.\n")
-                    
-                else:
-                    print("Only ranged units!")
+                    print("You must target a melee unit before you can fight the ranged ones.\n")
                 playerDamage = currentPlayer.strength+(random.randint(-3,5))
                 
-                print("You attack!")
+                print("You attack for %d damage!" %(playerDamage))
                 break
-            elif battleChoice == 2 :
+            elif battleChoice == "2" :
                 print("You Defend!")
                 break
-            elif battleChoice == 3 :
+            elif battleChoice == "3" :
                 print("Running away!\nReturning the way you came from!")
                 currentPlayer.currentLocation = currentPlayer.previousLocation
                 break
@@ -90,15 +103,14 @@ def battleField():
                 print("The", ii.etype, "enemy hurts you for", enemyDamage)
             
 
+    print("You manage to conquer all the enemies!")
+    
     for i in enemyGroup:
         del i
     
 
 
 def moveAround():
-
-    Skjønner,
-
 
     print(currentPlayer.currentLocation)
     global gameOn
