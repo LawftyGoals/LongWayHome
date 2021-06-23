@@ -28,14 +28,13 @@ def sleepertimer(i):
 def battleField():
     battleOn = True
 
-    enemyGroup = []
+    enemyGroup = {}
 
-
-    
 #Adds number of enemies found in current player location to the enemy list.
     for i in range(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]):
         newEnemy = enemy(random.randint(0,2), random.randint(0,1))
-        enemyGroup.append(newEnemy)
+        newEnemy.numberInGroup = i+1
+        enemyGroup.update({newEnemy.numberInGroup : newEnemy})
 
     if len(enemyGroup) > 1:
         print(len(enemyGroup), battleIntro[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
@@ -53,10 +52,10 @@ def battleField():
         rangeEnGr = []
 
         for i in enemyGroup:
-            if (i.etype == "melee"):
+            if (enemyGroup[i].etype == "melee"):
                 meleeEn += 1
                 meleeEnGr.append(i)
-            elif(i.etype == "ranged"):
+            elif(enemyGroup[i] == "ranged"):
                 rangeEn += 1
                 rangeEnGr.append(i)
         print(meleeEnGr)
@@ -70,23 +69,38 @@ def battleField():
             
             if rangeEn > 0 :
                 for i in rangeEnGr :
-                    print("%(space)3s %(R)-3s" % enDict),
+                    print("%(space)3s %(R)s" % enDict, end = "")
+                    print(i.numberInGroup, "  ", end = "")
             print("")
             if meleeEn > 0 :
                 for i in meleeEnGr:
-                    print('%(space)2s %(M)-3s' % enDict),
-
+                    print("%(space)2s %(M)s" % enDict, end = "")
+                    print(i.numberInGroup, "  ", end = "")
+            
             print("\n"*3)
+            if meleeEn > 0:
+                print("You must target a melee unit before you can fight the ranged ones.\n")
             
             battleChoice = input("1. Attack - 2. Defend - 3. Run\n")
             if battleChoice == "1" :
-                whatEnemyAttack = input("Which enemy do you want to attack?\n")
-                if meleeEn > 0:
-                    print("You must target a melee unit before you can fight the ranged ones.\n")
-                playerDamage = currentPlayer.strength+(random.randint(-3,5))
                 
-                print("You attack for %d damage!" %(playerDamage))
-                break
+                while(True) :
+                    whatEnemyAttack = int(input("Which enemy do you want to attack?\n"))
+                    if whatEnemyAttack <= 0 or whatEnemyAttack > len(enemyGroup) :
+                        print("Invalid target")
+                    else :
+                        #trying to find object by applied value, probably wrong
+                        playerDamage = currentPlayer.strength+(random.randint(-3,5))
+                        enemyGroup[whatEnemyAttack].health -= playerDamage
+                        print("You attack for %d damage!" %(playerDamage))
+
+                        if enemyGroup[whatEnemyAttack - 1].health <= 0 :
+                            del enemyGroup[whatEnemyAttack - 1]
+                            print("The target has died!")
+
+                        break
+                
+                
             elif battleChoice == "2" :
                 print("You Defend!")
                 break

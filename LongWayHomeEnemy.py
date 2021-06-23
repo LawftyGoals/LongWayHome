@@ -7,6 +7,7 @@ class enemy :
         self.level = level
         self.levelMultiplyer = [1, 1.5, 2]
         self.etype = self.selectedType[etype]
+        self.numberInGroup = 0
         
         if self.etype == "melee":
             self.strength = 10 * self.levelMultiplyer[self.level]
