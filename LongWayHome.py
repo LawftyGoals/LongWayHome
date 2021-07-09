@@ -63,19 +63,31 @@ def battleField():
         
         while (True) :
 
-            enDict = {"space":"", "R" : "R", "M": "M"}
+            if len(enemyGroup) >= 0:
+                print("The enemies have been defeated!")
+                break
+
+            #enDict = {"space":"", "R" : "R", "M": "M"}
             
             print("\n"*3)
-            
-            if rangeEn > 0 :
-                for i in rangeEnGr :
-                    print("%(space)3s %(R)s" % enDict, end = "")
-                    print(i.numberInGroup, "  ", end = "")
-            print("")
-            if meleeEn > 0 :
-                for i in meleeEnGr:
-                    print("%(space)2s %(M)s" % enDict, end = "")
-                    print(i.numberInGroup, "  ", end = "")
+
+            for ii in enemyGroup :
+                if enemyGroup[ii].etype == "ranged":
+                    print("   R"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
+
+            for ii in enemyGroup :
+                if enemyGroup[ii].etype == "melee":
+                    print("   M"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
+                
+            #if rangeEn > 0 :
+            #    for i in rangeEnGr :
+            #        print("%(space)3s %(R)s" % enDict, end = "")
+            #        print(i.numberInGroup, "  ", end = "")
+            #print("")
+            #if meleeEn > 0 :
+            #    for i in meleeEnGr:
+            #        print("%(space)2s %(M)s" % enDict, end = "")
+            #        print(i.numberInGroup, "  ", end = "")
             
             print("\n"*3)
             if meleeEn > 0:
@@ -89,13 +101,13 @@ def battleField():
                     if whatEnemyAttack <= 0 or whatEnemyAttack > len(enemyGroup) :
                         print("Invalid target")
                     else :
-                        #trying to find object by applied value, probably wrong
+                        #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
                         playerDamage = currentPlayer.strength+(random.randint(-3,5))
                         enemyGroup[whatEnemyAttack].health -= playerDamage
                         print("You attack for %d damage!" %(playerDamage))
 
-                        if enemyGroup[whatEnemyAttack - 1].health <= 0 :
-                            del enemyGroup[whatEnemyAttack - 1]
+                        if enemyGroup[whatEnemyAttack].health <= 0 :
+                            del enemyGroup[whatEnemyAttack]
                             print("The target has died!")
 
                         break
@@ -112,9 +124,9 @@ def battleField():
                 print("Wrong input.")
 
             for ii in enemyGroup :
-                enemyDamage = ii.strength+(random.randint(-3,3))
+                enemyDamage = enemyGroup[ii].strength+(random.randint(-3,3))
                 currentPlayer.health -= enemyDamage
-                print("The", ii.etype, "enemy hurts you for", enemyDamage)
+                print("The", enemyGroup[ii].etype, "enemy hurts you for", enemyDamage)
             
 
     print("You manage to conquer all the enemies!")
