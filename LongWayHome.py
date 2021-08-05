@@ -27,7 +27,7 @@ def sleepertimer(i):
 #battle
 def battleField():
     battleOn = True
-
+    
     enemyGroup = {}
 
 #Adds number of enemies found in current player location to the enemy list.
@@ -41,9 +41,11 @@ def battleField():
     elif len(enemyGroup) == 0:
         print(len(enemyGroup), battleIntroS[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
 
+    print(len(enemyGroup))
+
     while(battleOn):
 
-        if len(enemyGroup) == 0:
+        if len(enemyGroup) <= 0:
             break
         
         meleeEn = 0
@@ -60,69 +62,69 @@ def battleField():
                 rangeEnGr.append(i)
         print(meleeEnGr)
         print(rangeEnGr)
-        
-        while (True) :
 
-            if len(enemyGroup) >= 0:
-                print("The enemies have been defeated!")
-                break
+        if len(enemyGroup) <= 0:
+            print("The enemies have been defeated!")
+            break
 
-            #enDict = {"space":"", "R" : "R", "M": "M"}
+        #enDict = {"space":"", "R" : "R", "M": "M"}
             
-            print("\n"*3)
+        print("\n"*3)
 
-            for ii in enemyGroup :
-                if enemyGroup[ii].etype == "ranged":
-                    print("   R"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
+        for ii in enemyGroup :
+            if enemyGroup[ii].etype == "ranged":
+                print("   R"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
 
-            for ii in enemyGroup :
-                if enemyGroup[ii].etype == "melee":
-                    print("   M"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
+        for ii in enemyGroup :
+            if enemyGroup[ii].etype == "melee":
+                print("   M"+str(enemyGroup[ii].numberInGroup) + "   ", end = "")
                 
-            #if rangeEn > 0 :
-            #    for i in rangeEnGr :
-            #        print("%(space)3s %(R)s" % enDict, end = "")
-            #        print(i.numberInGroup, "  ", end = "")
-            #print("")
-            #if meleeEn > 0 :
-            #    for i in meleeEnGr:
-            #        print("%(space)2s %(M)s" % enDict, end = "")
-            #        print(i.numberInGroup, "  ", end = "")
+        #if rangeEn > 0 :
+        #    for i in rangeEnGr :
+        #        print("%(space)3s %(R)s" % enDict, end = "")
+        #        print(i.numberInGroup, "  ", end = "")
+        #print("")
+        #if meleeEn > 0 :
+        #    for i in meleeEnGr:
+        #        print("%(space)2s %(M)s" % enDict, end = "")
+        #        print(i.numberInGroup, "  ", end = "")
             
-            print("\n"*3)
-            if meleeEn > 0:
-                print("You must target a melee unit before you can fight the ranged ones.\n")
-            
-            battleChoice = input("1. Attack - 2. Defend - 3. Run\n")
-            if battleChoice == "1" :
-                
-                while(True) :
-                    whatEnemyAttack = int(input("Which enemy do you want to attack?\n"))
-                    if whatEnemyAttack <= 0 or whatEnemyAttack > len(enemyGroup) :
-                        print("Invalid target")
-                    else :
-                        #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
-                        playerDamage = currentPlayer.strength+(random.randint(-3,5))
-                        enemyGroup[whatEnemyAttack].health -= playerDamage
-                        print("You attack for %d damage!" %(playerDamage))
+        print("\n"*3)
 
-                        if enemyGroup[whatEnemyAttack].health <= 0 :
-                            del enemyGroup[whatEnemyAttack]
-                            print("The target has died!")
+        battleChoice = input("1. Attack - 2. Defend - 3. Run\n")
 
-                        break
+        if battleChoice == "1" :
+                
+            while(True) :
+                whatEnemyAttack = input("Which enemy do you want to attack?\n")
+                if not(isinstance(whatEnemyAttack, int)):
+                    print("Invalid target")
+                else :
+                    whatEnemyAttack = int(whatEnemyAttack) #I did this because otherwise inting an empty variable would throw error
+                    #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
+                    playerDamage = currentPlayer.strength+(random.randint(-3,5))
+                    enemyGroup[whatEnemyAttack].health -= playerDamage
+                    print("You attack for %d damage!" %(playerDamage))
+
+                    if enemyGroup[whatEnemyAttack].health <= 0 :
+                        del enemyGroup[whatEnemyAttack]
+                        print("The target has died!")
+
+                    break
                 
                 
-            elif battleChoice == "2" :
-                print("You Defend!")
-                break
-            elif battleChoice == "3" :
-                print("Running away!\nReturning the way you came from!")
-                currentPlayer.currentLocation = currentPlayer.previousLocation
-                break
-            else:
-                print("Wrong input.")
+        elif battleChoice == "2" :
+            print("You Defend!")
+            break
+        elif battleChoice == "3" :
+            print("Running away!\nReturning the way you came from!")
+            currentPlayer.currentLocation = currentPlayer.previousLocation
+            break
+        else:
+            print("Wrong input.")
 
+
+        if(len(enemyGroup) > 0):
             for ii in enemyGroup :
                 enemyDamage = enemyGroup[ii].strength+(random.randint(-3,3))
                 currentPlayer.health -= enemyDamage
@@ -131,9 +133,7 @@ def battleField():
 
     print("You manage to conquer all the enemies!")
     
-    for i in enemyGroup:
-        del i
-    
+
 
 
 def moveAround():
