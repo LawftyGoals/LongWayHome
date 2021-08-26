@@ -30,13 +30,13 @@ class gameBoardCreation:
                     self.gameBoard[i].append([0,0,1])
                     
                 elif (i >= (gameBoardSize/2) and ii >=(gameBoardSize/2)):
-                    enemyPresent = random.randint(0,4)
+                    enemyPresent = random.randint(0,5)
                     foodPresent = random.randint(0,2)
                     self.gameBoard[i].append([enemyPresent,foodPresent,0])
                     
                 else:
                     enemyPresent = random.randint(0,3)
-                    foodPresent = random.randint(0,4)
+                    foodPresent = random.randint(0,5)
                     self.gameBoard[i].append([enemyPresent,foodPresent,0])
         
 

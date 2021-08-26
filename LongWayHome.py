@@ -29,6 +29,7 @@ def battleField():
     battleOn = True
     
     enemyGroup = {}
+    enemyNumberExists = []
 
 #Adds number of enemies found in current player location to the enemy list.
     for i in range(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]):
@@ -45,15 +46,13 @@ def battleField():
 
     while(battleOn):
 
-        if len(enemyGroup) <= 0:
-            break
-        
         meleeEn = 0
         meleeEnGr = []
         rangeEn = 0
         rangeEnGr = []
 
         for i in enemyGroup:
+            enemyNumberExists.append(enemyGroup[i].numberInGroup)
             if (enemyGroup[i].etype == "melee"):
                 meleeEn += 1
                 meleeEnGr.append(i)
@@ -62,10 +61,6 @@ def battleField():
                 rangeEnGr.append(i)
         print(meleeEnGr)
         print(rangeEnGr)
-
-        if len(enemyGroup) <= 0:
-            print("The enemies have been defeated!")
-            break
 
         #enDict = {"space":"", "R" : "R", "M": "M"}
             
@@ -91,49 +86,167 @@ def battleField():
             
         print("\n"*3)
 
-        battleChoice = input("1. Attack - 2. Defend - 3. Run\n")
-
+        battleChoice = input("1. Attack - 2. Defend (and run or riposte)\n")
+###ATTACK:
         if battleChoice == "1" :
                 
             while(True) :
                 whatEnemyAttack = input("Which enemy do you want to attack?\n")
-                if not(isinstance(whatEnemyAttack, int)):
+                if whatEnemyAttack.isdigit():
+                    if(int(whatEnemyAttack)>0 and int(whatEnemyAttack)<11 and int(whatEnemyAttack) in enemyNumberExists):
+                        whatEnemyAttack = int(whatEnemyAttack)
+                        break;
+                    else:
+                        print("Invalid target")
+                else:
                     print("Invalid target")
-                else :
-                    whatEnemyAttack = int(whatEnemyAttack) #I did this because otherwise inting an empty variable would throw error
-                    #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
-                    playerDamage = currentPlayer.strength+(random.randint(-3,5))
-                    enemyGroup[whatEnemyAttack].health -= playerDamage
-                    print("You attack for %d damage!" %(playerDamage))
-
-                    if enemyGroup[whatEnemyAttack].health <= 0 :
-                        del enemyGroup[whatEnemyAttack]
-                        print("The target has died!")
-
-                    break
                 
+            #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
+            playerAttackFunction(whatEnemyAttack)
+            enemyAttackFunction(-3,3)
+###DEFENSE:
                 
         elif battleChoice == "2" :
-            print("You Defend!")
-            break
-        elif battleChoice == "3" :
-            print("Running away!\nReturning the way you came from!")
-            currentPlayer.currentLocation = currentPlayer.previousLocation
-            break
+            print("You're on the Defensive!")
+            if(len(enemyGroup) > 0):
+                for ii in enemyGroup :
+                    ##defenseRoll = random.randint(0,99) ## Defense sets 75% chance to miss
+                    if(defenseRoll < 25):
+                        enemyAttackFunction(-6,0) ## lower damage if in defensive stance.
+
+                    elif(defenseRoll > 24): ## If player defends by 75% it'll be fine and you dodge it. !!!!!!!!!!!!!!!!!Possible to add flavour.
+                        print("You manage to dodge the attack!")
+                        
+                print("You can attempt to disengage and run or attack with a riposte attack!")
+                
+                runOrRiposte = input("What would you like to do? - 1. Run! 2. Riposte!)
+                                     
+                if(runOrRiposte == "1"):
+                    print("Attempting to run!")
+                    time.sleep(1000)
+                    chanceOfEscape = random.randint(0,99)
+                    if(len(enemyGroup)>5):
+                        if(chanceOfEscape > 24):
+                            print("You failed to get away!")
+                            enemyAttackFunction(-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                    elif(len(enemyGroup)>4):
+                        if(chanceOfEscape > 32):
+                            print("You failed to get away!")
+                            enemyAttackFunction(-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                    elif(len(enemyGroup)>3):
+                        if(chanceOfEscape > 49):
+                            print("You failed to get away!")
+                            enemyAttackFunction(-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                    elif(len(enemyGroup)>2):
+                        if(chanceOfEscape > 74):
+                            print("You failed to get away!")
+                            enemyAttackFunction(-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                    elif(len(enemyGroup)>1):
+                        if(chanceOfEscape > 89):
+                            print("You failed to get away!")
+                            enemyAttackFunction(-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                elif(runOrRiposte == "2"):
+                    whatEnemyRiposte = random.randint(0,len(enemyGroup))
+                    playerAttackFunction(whatEnemyRiposte)
+                    
         else:
             print("Wrong input.")
-
-
-        if(len(enemyGroup) > 0):
-            for ii in enemyGroup :
-                enemyDamage = enemyGroup[ii].strength+(random.randint(-3,3))
-                currentPlayer.health -= enemyDamage
-                print("The", enemyGroup[ii].etype, "enemy hurts you for", enemyDamage)
             
 
-    print("You manage to conquer all the enemies!")
-    
+def enemyAttackFunction(attackA,attackB):
+    if(len(enemyGroup)>0):
+        enemyDamage = enemyGroup[ii].strength+(random.randint(attackA,attackB)) ### Standard attackA -3 attackB 3
+        currentPlayer.health -= enemyDamage
+        print("The", enemyGroup[ii].etype, "enemy hurts you for", enemyDamage)
 
+
+
+def playerAttackFunction(whatEn):
+    playerDamage = currentPlayer.strength+(random.randint(-3,5))
+    enemyGroup[whatEn].health -= playerDamage
+    print("You attack for %d damage!" %(playerDamage))
+
+
+    if enemyGroup[whatEn].health <= 0 :
+        enemyNumberExists.remove(enemyGroup[whatEn].numberInGroup)
+        del enemyGroup[whatEn]
+        print("The target has died!")
+        
+        if(len(enemyGroup)<=0):
+           print("You have defeated all the enemies!")
+           break
+        
+def foraging(foragingNumbers):
+    print("\n"*3)
+    if("Foraging" in currentPlayer.spec_abilities):
+        currentPlayer.heldResources = currentPlayer.heldResources+foragingNumbers*2
+    else:
+        currentPlayer.heldResources = currentPlayer.heldResources+foragingNumbers
+
+        
+    if numberOfResources == 0:
+        print("No resources discovered here.")
+    elif(numberOfResources == 1):
+        print("You've discovered 1 resource.")
+    elif(numberOfResources > 1):
+        print("You've discovered", numberOfResources, "resources!")
+
+    selectedChoices=0
+
+
+    while(True):
+        if(selectedChoices==2):
+            break
+        print("\nNow, what would you like to do?")
+        restChoice =input("1. Rest, 2. Heal, 3. Explore, 4. Move on")
+        
+        if(restChoice == "1"):
+            currentPlayer.health = currentPlayer.health+20
+            
+        elif(restChoice == "2"):
+            print("How many resources would you like to use? (Each resource gives 10 health")
+            usedResources=input("Amount: ")
+            print("Player healed for", usedResources*10, "HP")
+            currentPlayer.health = currentPlayer.health+(10*usedResources)
+
+        elif(restChoice == "3"):
+            print("Exploring!")
+            time.sleep(1000)
+            print("...")
+            time.sleep(1000)
+            possibleExplore()
+
+        elif(restChoice == "4"):
+            print("Moving on!")
+            break
+
+        else:
+            print("Invalid Input")
+            
+    
+    
+def possibleExplore():
+    
 
 
 def moveAround():
@@ -189,7 +302,7 @@ def moveAround():
             battleField()
             
         if(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0):
-            gameOn = True
+            foraging(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0)
     
 
 #Startup screen
