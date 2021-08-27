@@ -15,6 +15,9 @@ battleIntro = ["vile beasts come crashing out of the forrest, heading straight f
 battleIntroS = ["vile beast comes crashing out of the forrest, heading straight for you!",
                "enemy appears from the shadows brandishing its weapons!",
                "creature comes rushing for you, rabbid with bloodlust!"]
+endingLines = ["The last enemy attack makes it through your defense, and strikes true. You feel yourself go weak, your sight goes black and your long way home comes up short."]
+
+defenseLines = ["goes all out, but you dodge the attack!"]
 
 gameOn = True
 
@@ -35,14 +38,17 @@ def battleField():
     for i in range(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]):
         newEnemy = enemy(random.randint(0,2), random.randint(0,1))
         newEnemy.numberInGroup = i+1
+        newEnemy.etypeI = newEnemy.etypeI+str(newEnemy.numberInGroup)
         enemyGroup.update({newEnemy.numberInGroup : newEnemy})
 
     if len(enemyGroup) > 1:
         print(len(enemyGroup), battleIntro[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
-    elif len(enemyGroup) == 0:
+    elif len(enemyGroup) == 1:
         print(len(enemyGroup), battleIntroS[random.randint(0, len(battleIntro)-1)], "What would you like to do?\n")
 
     print(len(enemyGroup))
+    for i in enemyGroup:
+        enemyNumberExists.append(enemyGroup[i].numberInGroup)
 
     while(battleOn):
 
@@ -52,7 +58,6 @@ def battleField():
         rangeEnGr = []
 
         for i in enemyGroup:
-            enemyNumberExists.append(enemyGroup[i].numberInGroup)
             if (enemyGroup[i].etype == "melee"):
                 meleeEn += 1
                 meleeEnGr.append(i)
@@ -85,7 +90,8 @@ def battleField():
         #        print(i.numberInGroup, "  ", end = "")
             
         print("\n"*3)
-
+        print("HP:", currentPlayer.health)
+        print(enemyNumberExists)
         battleChoice = input("1. Attack - 2. Defend (and run or riposte)\n")
 ###ATTACK:
         if battleChoice == "1" :
@@ -102,89 +108,99 @@ def battleField():
                     print("Invalid target")
                 
             #trying to find object by applied value, probably wrong - Was wrong, is being replaced by dictionary search.
-            playerAttackFunction(whatEnemyAttack)
-            enemyAttackFunction(-3,3)
+            playerAttackFunction(enemyGroup,enemyNumberExists,whatEnemyAttack)
+            if(len(enemyGroup)<=0):
+               print("You have defeated all the enemies!")
+               gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]=0
+               break
+            for ii in enemyGroup :
+                enemyAttackFunction(enemyGroup,ii,-3,3)
 ###DEFENSE:
                 
         elif battleChoice == "2" :
             print("You're on the Defensive!")
             if(len(enemyGroup) > 0):
                 for ii in enemyGroup :
-                    ##defenseRoll = random.randint(0,99) ## Defense sets 75% chance to miss
+                    defenseRoll = random.randint(0,99) ## Defense sets 75% chance to miss
                     if(defenseRoll < 25):
-                        enemyAttackFunction(-6,0) ## lower damage if in defensive stance.
-
+                        enemyAttackFunction(enemyGroup,ii,-8,-3) ## lower damage if in defensive stance.
+                        if(currentPlayer.health <= 0):
+                            print(endingLines[random.randint(0,len(endingLines)-1)])
                     elif(defenseRoll > 24): ## If player defends by 75% it'll be fine and you dodge it. !!!!!!!!!!!!!!!!!Possible to add flavour.
-                        print("You manage to dodge the attack!")
+                        print(enemyGroup[ii].etypeI, defenseLines[random.randint(0,len(defenseLines)-1)])
                         
                 print("You can attempt to disengage and run or attack with a riposte attack!")
                 
-                runOrRiposte = input("What would you like to do? - 1. Run! 2. Riposte!)
+                runOrRiposte = input("What would you like to do? - 1. Run! 2. Riposte!")
                                      
                 if(runOrRiposte == "1"):
                     print("Attempting to run!")
-                    time.sleep(1000)
+                    time.sleep(1)
                     chanceOfEscape = random.randint(0,99)
-                    if(len(enemyGroup)>5):
+                    if(len(enemyGroup)>4):
                         if(chanceOfEscape > 24):
                             print("You failed to get away!")
-                            enemyAttackFunction(-3,3)
-                        else:
-                            print("You succeeded in escaping!")
-                            currentPlayer.currentLocation = currentPlayer.previousLocation
-                            break
-                    elif(len(enemyGroup)>4):
-                        if(chanceOfEscape > 32):
-                            print("You failed to get away!")
-                            enemyAttackFunction(-3,3)
+                            enemyAttackFunction(enemyGroup,(random.randint(0,len(enemyNumberExists))-1),-3,3)
                         else:
                             print("You succeeded in escaping!")
                             currentPlayer.currentLocation = currentPlayer.previousLocation
                             break
                     elif(len(enemyGroup)>3):
-                        if(chanceOfEscape > 49):
+                        if(chanceOfEscape > 32):
                             print("You failed to get away!")
-                            enemyAttackFunction(-3,3)
+                            enemyAttackFunction(enemyGroup,(random.randint(0,len(enemyNumberExists))-1),-3,3)
                         else:
                             print("You succeeded in escaping!")
                             currentPlayer.currentLocation = currentPlayer.previousLocation
                             break
                     elif(len(enemyGroup)>2):
-                        if(chanceOfEscape > 74):
+                        if(chanceOfEscape > 49):
                             print("You failed to get away!")
-                            enemyAttackFunction(-3,3)
+                            enemyAttackFunction(enemyGroup,(random.randint(0,len(enemyNumberExists))-1),-3,3)
                         else:
                             print("You succeeded in escaping!")
                             currentPlayer.currentLocation = currentPlayer.previousLocation
                             break
                     elif(len(enemyGroup)>1):
+                        if(chanceOfEscape > 74):
+                            print("You failed to get away!")
+                            enemyAttackFunction(enemyGroup,(random.randint(0,len(enemyNumberExists))-1),-3,3)
+                        else:
+                            print("You succeeded in escaping!")
+                            currentPlayer.currentLocation = currentPlayer.previousLocation
+                            break
+                    elif(len(enemyGroup)>0):
                         if(chanceOfEscape > 89):
                             print("You failed to get away!")
-                            enemyAttackFunction(-3,3)
+                            enemyAttackFunction(enemyGroup,(random.randint(0,len(enemyNumberExists))-1),-3,3)
                         else:
                             print("You succeeded in escaping!")
                             currentPlayer.currentLocation = currentPlayer.previousLocation
                             break
                 elif(runOrRiposte == "2"):
-                    whatEnemyRiposte = random.randint(0,len(enemyGroup))
-                    playerAttackFunction(whatEnemyRiposte)
+                    whatEnemyRiposte = random.randint(0,len(enemyNumberExists)-1)
+                    playerAttackFunction(enemyGroup,enemyNumberExists, enemyNumberExists[whatEnemyRiposte])
+                    if(len(enemyGroup)<=0):
+                        gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]
+                        print("You have defeated all the enemies!")
+                        break
                     
         else:
             print("Wrong input.")
             
 
-def enemyAttackFunction(attackA,attackB):
+def enemyAttackFunction(enemyGroup,ii,attackA,attackB):
     if(len(enemyGroup)>0):
         enemyDamage = enemyGroup[ii].strength+(random.randint(attackA,attackB)) ### Standard attackA -3 attackB 3
         currentPlayer.health -= enemyDamage
-        print("The", enemyGroup[ii].etype, "enemy hurts you for", enemyDamage)
+        print("The", enemyGroup[ii].etypeI, "enemy hurts you for", enemyDamage)
 
 
 
-def playerAttackFunction(whatEn):
+def playerAttackFunction(enemyGroup,enemyNumberExists, whatEn):
     playerDamage = currentPlayer.strength+(random.randint(-3,5))
     enemyGroup[whatEn].health -= playerDamage
-    print("You attack for %d damage!" %(playerDamage))
+    print("You attack", enemyGroup[whatEn].etypeI, "for %d damage!" %(playerDamage))
 
 
     if enemyGroup[whatEn].health <= 0 :
@@ -192,9 +208,6 @@ def playerAttackFunction(whatEn):
         del enemyGroup[whatEn]
         print("The target has died!")
         
-        if(len(enemyGroup)<=0):
-           print("You have defeated all the enemies!")
-           break
         
 def foraging(foragingNumbers):
     print("\n"*3)
@@ -204,12 +217,14 @@ def foraging(foragingNumbers):
         currentPlayer.heldResources = currentPlayer.heldResources+foragingNumbers
 
         
-    if numberOfResources == 0:
+    if foragingNumbers == 0:
         print("No resources discovered here.")
-    elif(numberOfResources == 1):
+    elif(foragingNumbers == 1):
         print("You've discovered 1 resource.")
-    elif(numberOfResources > 1):
-        print("You've discovered", numberOfResources, "resources!")
+    elif(foragingNumbers > 1):
+        print("You've discovered", foragingNumbers, "resources!")
+
+    gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]=0
 
     selectedChoices=0
 
@@ -218,23 +233,43 @@ def foraging(foragingNumbers):
         if(selectedChoices==2):
             break
         print("\nNow, what would you like to do?")
-        restChoice =input("1. Rest, 2. Heal, 3. Explore, 4. Move on")
+        print("HP:", currentPlayer.health)
+        restChoice =input("1. Rest, 2. Heal, 3. Explore, 4. Move on\n")
         
         if(restChoice == "1"):
-            currentPlayer.health = currentPlayer.health+20
+            print("You make a camp and tucker down for some rest and relaxation.")
+            if(currentPlayer.health < (currentPlayer.maxHealth-currentPlayer.restStrength)) :
+                currentPlayer.health = currentPlayer.health+currentPlayer.restStrength
+            elif(currentPlayer.health > (currentPlayer.maxHealth-currentPlayer.restStrength)):
+                currentPlayer.health = currentPlayer.health+(currentPlayer.maxHealth-currentPlayer.health)
+            selectedChoices+=1
             
         elif(restChoice == "2"):
             print("How many resources would you like to use? (Each resource gives 10 health")
             usedResources=input("Amount: ")
-            print("Player healed for", usedResources*10, "HP")
-            currentPlayer.health = currentPlayer.health+(10*usedResources)
+            if(usedResources.isdigit()):
+                usedResources=int(usedResources)
+                if(usedResources <= currentPlayer.heldResources):
+                    usedResources=int(usedResources)
+                    print("Player healed for", usedResources*10, "HP")
+                    currentPlayer.health = currentPlayer.health+(10*usedResources)
+                    currentPlayer.heldResources = currentPlayer.heldResources-usedResources
+                elif(usedResources>currentPlayer.heldResources):
+                    print("You don't have enough resources!")
+                elif(usedResources<1):
+                    print("Invalid number")
+            else:
+                print("Invalid input")
+            selectedChoices+=1
 
         elif(restChoice == "3"):
             print("Exploring!")
-            time.sleep(1000)
+            time.sleep(1)
             print("...")
-            time.sleep(1000)
+            time.sleep(1)
             possibleExplore()
+            trackHome()
+            selectedChoices+=1
 
         elif(restChoice == "4"):
             print("Moving on!")
@@ -246,7 +281,42 @@ def foraging(foragingNumbers):
     
     
 def possibleExplore():
+    ##
+    print("exploring")
     
+def trackHome():
+    ##Looks at current palyer location, then at finish location and gives general direction.
+        currentPlayerX= currentPlayer.currentLocation[0]
+        currentPlayerY= currentPlayer.currentLocation[1]
+        endZoneLocationX= gameMap.endZoneSet[0]
+        endZoneLocationY= gameMap.endZoneSet[1]
+
+        directionX = endZoneLocationX-currentPlayerX
+        directionY = endZoneLocationY-currentPlayerY
+
+        if directionX > 0 and directionY > 0 :
+            print("You must go South-East")
+
+        elif directionX < 0 and directionY > 0 :
+            print("You must go North-East")
+
+        elif directionX < 0 and directionY < 0 :
+            print("You must go North-West")
+
+        elif directionX > 0 and directionY < 0 :
+            print("You must go South-West")        
+
+        elif directionX == 0 and directionY > 0 :
+            print("You must go East")
+
+        elif directionX < 0 and directionY == 0 :
+            print("You must go North")
+
+        elif directionX == 0 and directionY < 0 :
+            print("You must go West")
+
+        elif directionX > 0 and directionY == 0 :
+            print("You must go South")   
 
 
 def moveAround():
@@ -255,54 +325,60 @@ def moveAround():
     global gameOn
 
     while gameOn == True:
-        movement = input("What direction would you like to move? North(w)-South(s)-East(d)-West(a)\n")
+        
         print(gameOn)
         print(currentPlayer.currentLocation, gameMap.endZoneSet)
-        
-        if (currentPlayer.currentLocation == gameMap.endZoneSet):
-            gameOn = False
-            return
-        
-        if (movement == "w"):
-            if (player.currentLocation[1] == 0) :
-                print("Can't go any further north.")
-                
-            else:
-                currentPlayer.previousLocation = currentPlayer.currentLocation
-                player.currentLocation[1] = player.currentLocation[1]-1
-                
-        elif (movement == "s"):
-            if (player.currentLocation[1] == gameBoardSize-1) :
-                print("Can't go any further south.")
-                
-            else:
-                currentPlayer.previousLocation = currentPlayer.currentLocation
-                player.currentLocation[1] = player.currentLocation[1]+1
 
-        elif (movement == "a"):
-            if (player.currentLocation[0] == 0) :
-                print("Can't go any further west.")
+        while(True):
+            movement = input("What direction would you like to move? North(w)-South(s)-East(d)-West(a)\n")
+            if (movement == "w"):
+                if (player.currentLocation[1] == 0) :
+                    print("Can't go any further north.")
+                    
+                else:
+                    currentPlayer.previousLocation = currentPlayer.currentLocation
+                    player.currentLocation[1] = player.currentLocation[1]-1
+                    break
+                    
+            elif (movement == "s"):
+                if (player.currentLocation[1] == gameBoardSize-1) :
+                    print("Can't go any further south.")
+                    
+                else:
+                    currentPlayer.previousLocation = currentPlayer.currentLocation
+                    player.currentLocation[1] = player.currentLocation[1]+1
+                    break
 
-            else:
-                currentPlayer.previousLocation = currentPlayer.currentLocation
-                player.currentLocation[0] = player.currentLocation[0]-1
+            elif (movement == "a"):
+                if (player.currentLocation[0] == 0) :
+                    print("Can't go any further west.")
 
-        elif (movement == "d"):
-            if (player.currentLocation[0] == gameBoardSize-1) :
-                print("Can't go any further east.")
-                
+                else:
+                    currentPlayer.previousLocation = currentPlayer.currentLocation
+                    player.currentLocation[0] = player.currentLocation[0]-1
+                    break
+
+            elif (movement == "d"):
+                if (player.currentLocation[0] == gameBoardSize-1) :
+                    print("Can't go any further east.")
+                    
+                else:
+                    currentPlayer.previousLocation = currentPlayer.currentLocation
+                    player.currentLocation[0] = player.currentLocation[0]+1
+                    break
+                    
             else:
-                currentPlayer.previousLocation = currentPlayer.currentLocation
-                player.currentLocation[0] = player.currentLocation[0]+1
-                
-        else:
-            print("Invalid input")
+                print("Invalid input")
+
+        if(currentPlayer.currentLocation == gameMap.endZoneSet):
+            print("You have reached the end of your journey...")
+            break
 
         if(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][0]>0):
             battleField()
             
-        if(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0):
-            foraging(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0)
+        #if(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0): ### removed because foraging should happen anyway
+        foraging(gameMap.gameBoard[currentPlayer.currentLocation[0]][currentPlayer.currentLocation[1]][1]>0)
     
 
 #Startup screen
@@ -324,12 +400,14 @@ def game_startscreen():
         
         game_startscreen()
 
-
+def endGame():
+    print("game ending")
 
 print("****** THE LONG WAY HOME ******" )
               
 game_startscreen()
 gameMap.gameBoardCreator()
 moveAround()
+endGame()
 print(gameOn)
 
