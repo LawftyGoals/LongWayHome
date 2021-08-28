@@ -19,6 +19,10 @@ endingLines = ["The last enemy attack makes it through your defense, and strikes
 
 defenseLines = ["goes all out, but you dodge the attack!"]
 
+possibleAbilities = {"Foraging" : "Resources now give 10 more health.", "Fighting": "You do 10 more damage.",
+                     "Defensive": "Chance of dodging attacks in defensive stance increases by 10%.",
+                     "Health Boost": "Max Health increases by 20."}
+
 gameOn = True
 
 
@@ -281,8 +285,45 @@ def foraging(foragingNumbers):
     
     
 def possibleExplore():
-    ##
+    ##These are forced events that may damage player, give health, give an extra prophiciency or do nothing.
     print("exploring")
+    chanceOfEvent = random.randint(0,99)
+
+    numberOfPossibleEvents = 4
+
+    if chanceOfEvent >= 0 and chanceOfEvent < (100/numberOfPossibleEvents):
+        print("You discover a shrine containing an ancient wisdom. This power can be used to grant one of the following:")
+        
+        for i in possibleAbilities:
+            if !(currentPlayer.spec_abilities.get(i, 0) == possibleAbilities.get(i, 1)):
+                print(i,"-", possibleAbilities[i])
+
+        while(True):
+            abilityChoice = input("Which one do you choose?\n")
+            if (abilitychoice.lower() == "foraging" and !("Foraging" in currentPlayer.spec_abilities):
+                currentPlayer.spec_abilities.update({"Foraging":possibleAbilities["Foraging"]})
+                del possibleAbilities["Foraging"]
+                print("You are imbued with enchanced foraging abilitiy!")
+                break
+            elif abilitychoice.lower() == "fighting" and !("Fighting" in currentPlayer.spec_abilities):
+                print("You are imbued with enchanced fighting abilitiy!")
+                currentPlayer.spec_abilities.update({"Fighting":possibleAbilities["Fighting"]})
+                del possibleAbilities["Fighting"]
+                break
+            elif abilitychoice.lower() == "defensive" and !("Defensive" in currentPlayer.spec_abilities):
+                currentPlayer.spec_abilities.update({"Defensive":possibleAbilities["Defensive"]})
+                del possibleAbilities["Defensive"]
+                print("You are imbued with enchanced defensive abilitiy!")
+                break
+            elif abilitychoice.lower() == "health boost" and !("Health Boost" in currentPlayer.spec_abilities):
+                currentPlayer.spec_abilities.update({"Health Boost":possibleAbilities["Health Boost"]})
+                del possibleAbilities["Health Boost"]
+                print("You are imbued with enchanced health!")
+                break
+            else
+                print("Invalid option")
+            
+    
     
 def trackHome():
     ##Looks at current palyer location, then at finish location and gives general direction.
