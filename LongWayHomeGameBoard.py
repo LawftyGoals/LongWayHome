@@ -22,7 +22,7 @@ class gameBoardCreation:
 
         for i in range(gameBoardSize):
             self.gameBoard.append([])
-            for ii in range(15):
+            for ii in range(gameBoardSize):
                 if(i == 0 and ii == 0):
                     self.gameBoard[i].append([0,0,0])
                     
