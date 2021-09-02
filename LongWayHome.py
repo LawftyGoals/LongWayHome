@@ -98,6 +98,7 @@ def battleField():
         print("HP:", currentPlayer.health)
         print(enemyNumberExists)
         battleChoice = input("1. Attack - 2. Defend (and run or riposte)\n")
+        
 ###ATTACK:
         if battleChoice == "1" :
                 
@@ -120,8 +121,8 @@ def battleField():
                break
             for ii in enemyGroup :
                 enemyAttackFunction(enemyGroup,ii,-3,3)
-###DEFENSE:
                 
+###DEFENSE:
         elif battleChoice == "2" :
             print("You're on the Defensive!")
             if(len(enemyGroup) > 0):
@@ -399,7 +400,7 @@ def moveAround():
                     
                 else:
                     #currentPlayer.previousLocation = currentPlayer.currentLocation
-                    currentPlayer.currentLocation[0] = currentPlayer.currentLocation[1]-1
+                    currentPlayer.currentLocation[0] = currentPlayer.currentLocation[0]-1
                     break
                     
             elif (movement == "s"):
@@ -408,7 +409,7 @@ def moveAround():
                     
                 else:
                     #currentPlayer.previousLocation = currentPlayer.currentLocation
-                    currentPlayer.currentLocation[0] = currentPlayer.currentLocation[1]+1
+                    currentPlayer.currentLocation[0] = currentPlayer.currentLocation[0]+1
                     break
 
             elif (movement == "a"):
@@ -418,7 +419,7 @@ def moveAround():
                 else:
 
                     #currentPlayer.previousLocation = currentPlayer.currentLocation
-                    currentPlayer.currentLocation[1] = currentPlayer.currentLocation[0]-1
+                    currentPlayer.currentLocation[1] = currentPlayer.currentLocation[1]-1
                     break
 
             elif (movement == "d"):
@@ -427,7 +428,7 @@ def moveAround():
                     
                 else:
                     #currentPlayer.previousLocation = currentPlayer.currentLocation
-                    currentPlayer.currentLocation[1] = currentPlayer.currentLocation[0]+1
+                    currentPlayer.currentLocation[1] = currentPlayer.currentLocation[1]+1
                     break
                     
             else:
