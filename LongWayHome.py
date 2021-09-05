@@ -247,6 +247,7 @@ def foraging(foragingNumbers):
         print("HP:", currentPlayer.health)
         print("Resources:", currentPlayer.heldResources)
         restChoice =input("1. Rest, 2. Heal, 3. Explore, 4. Move on\n")
+        print("CurrentLocation:", currentPlayer.currentLocation, "Explored:", currentPlayer.areasExplored)
         
         if(restChoice == "1"):
             print("You make a camp and tucker down for some rest and relaxation.")
@@ -257,7 +258,7 @@ def foraging(foragingNumbers):
             selectedChoices+=1
             
         elif(restChoice == "2"):
-            print("How many resources would you like to use? (Each resource gives 10 health")
+            print("How many of your",currentPlayer.heldResources, "resources would you like to use? (Each resource gives 10 health")
             usedResources=input("Amount: ")
             if(usedResources.isdigit()):
                 usedResources=int(usedResources)
@@ -276,6 +277,7 @@ def foraging(foragingNumbers):
 
         elif(restChoice == "3"):
             if(currentPlayer.currentLocation in currentPlayer.areasExplored):
+                trackHome()
                 print("\n\n\nThis area has already been explored.\n\n\n")
             else:
                 print("Exploring!")
@@ -284,7 +286,7 @@ def foraging(foragingNumbers):
                 time.sleep(1)
                 possibleExplore()
                 trackHome()
-                currentPlayer.areasExplored.append(currentPlayer.currentLocation)
+                currentPlayer.areasExplored.append(currentPlayer.currentLocation.copy()) ##ISSSUE THE APPENDING IS ACTUALLY ADDING THE ARRAY MAKING IT SO THAT THE EXLORED AREA IS ALWAYS BEING UPDATED TO CURRENT LOCATION
                 selectedChoices+=1
 
         elif(restChoice == "4"):
@@ -351,7 +353,7 @@ def trackHome():
         directionX = endZoneLocationX-currentPlayerX
         directionY = endZoneLocationY-currentPlayerY
 
-        print("You find a nice perch from which you can survey the \nsurrounding land and how your journey must continue")
+        print("You find a nice perch from which you can survey the \nsurrounding land and decide how your journey must continue.")
         
         if directionX > 0 and directionY > 0 :
             print("You must go South-East")
@@ -383,9 +385,11 @@ def moveAround():
     print(currentPlayer.currentLocation)
     global gameOn
 
+    currentDay=0
+
     while gameOn == True:
         
-        currentDay = 0
+    
         
 
         while(True):
